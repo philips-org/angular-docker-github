@@ -12,7 +12,7 @@ RUN npm run build --prod
 FROM nginx:alpine
 
 # Replace this with your actual build output folder name
-COPY --from=builder /app/dist/angular-aws-s3 /usr/share/nginx/html
+COPY --from=builder /app/dist/angular-github-actions-amazon-s3 /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80
