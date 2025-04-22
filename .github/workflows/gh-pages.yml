@@ -42,3 +42,4 @@ jobs:
           docker stop angular-app-container || true
           docker rm angular-app-container || true
           docker run -d --name angular-app-container -p 80:80 ${{ secrets.DOCKER_USERNAME }}/angular-app-container:latest
+
