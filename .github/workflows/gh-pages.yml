@@ -28,7 +28,7 @@ jobs:
 
     - name: Push Docker image to DockerHub
       run: |
-        docker tag angular-app-container ${{ secrets.DOCKER_USERNAME }}//angular-app-container:latest
+        docker tag angular-app-container ${{ secrets.DOCKER_USERNAME }}/angular-app-container:latest
         dcker push ${{ secrets.DOCKER_USERNAME }}//angular-app-container:latest
 
 
