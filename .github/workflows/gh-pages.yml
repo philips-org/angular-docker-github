@@ -29,7 +29,7 @@ jobs:
     - name: Push Docker image to DockerHub
       run: |
         docker tag angular-app-container ${{ secrets.DOCKER_USERNAME }}/angular-app-container:latest
-        docker push ${{ secrets.DOCKER_USERNAME }}//angular-app-container:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/angular-app-container:latest
 
     - name: SSH into EC2 and deploy
       uses: appleboy/ssh-action@v1.0.3
