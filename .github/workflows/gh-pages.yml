@@ -1,39 +1,45 @@
-name: GitHub Pages
+name: Deploy Angular to EC2
 
 on:
   push:
     branches:
-    - main
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v2
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: sa-east-1
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Checkout
-      uses: actions/checkout@v2
+    - name: Build Docker image
+      run: |
+        docker build -t angular-app-container .
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v2
+    - name: Push Docker image to DockerHub
+      run: |
+        docker tag angular-app-container ${{ secrets.DOCKER_USERNAME }}//angular-app-container:latest
+        dcker push ${{ secrets.DOCKER_USERNAME }}//angular-app-container:latest
+
+
+    - name: SSH into EC2 and deploy
+      uses: appleboy/ssh-action@v1.0.3
       with:
-        node-version: 16
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Run tests
-      run: npm run test:headless
-
-    - name: Build
-      run: npm run build:prod
-
-    - name: Deploy
-      if: success()
-      run: aws s3 sync ./dist/angular-github-actions-amazon-s3 s3://angular-deploy-github-actions-aws-s3
-
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/angular-app-container:latest
+          docker stop angular-app-container || true
+          docker rm angular-app-container || true
+          docker run -d --name angular-app-container -p 80:80 ${{ secrets.DOCKER_USERNAME }}/angular-app-container:latest
