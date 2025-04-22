@@ -2,10 +2,10 @@ name: CD Deploy Angular App to EC2
 
 on:
   workflow_dispatch:
-#  workflow_run:
-#    workflows: ["Build and Deploy Angular App to EC2 via ECR"]
-#    types:
-#      - completed
+  workflow_run:
+    workflows: ["Build and Deploy Angular App to EC2 via ECR"]
+    types:
+      - completed
 
 env:
   AWS_REGION: us-east-1
